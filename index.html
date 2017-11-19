@@ -1,0 +1,55 @@
+<html>
+<head>
+  <title>Jean-Pascal Martin's Weather Art trial - Weather in Paris as particles</title>
+  <meta charset="UTF-8">
+  <meta name="description" content="A weather art atempt, using moving particles that represent meteo & pollution in Paris. Data are provided in real time with Open Data (OpenWeatherMap). Particles are generated with Processing P5.js.">
+  <meta name="keywords" content="Data,Data art,Weather,Open data,Processing,P5.js,Art,Paris,Generative">
+  <meta name="author" content="Jean-Pascal Martin">
+  
+  <script language="javascript" type="text/javascript" src="libraries/p5.min.js"></script>
+  <script language="javascript" type="text/javascript" src="libraries/p5.dom.js"></script>
+  <script language="javascript" src="libraries/p5.dom.js"></script>
+  <script language="javascript" type="text/javascript" src="sketch.js"></script>
+  <script language="javascript" type="text/javascript" src="particle.js"></script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-93975663-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+  <style> 
+
+  body { 
+  	padding:0; 
+  	margin:0; 
+  	font-family: Arial;
+	background-color: black;
+	font-color: white;
+	font-size:11;
+  } 
+
+  #contenu { 
+	padding:5px; 
+  	a:link { color: white; }
+	a:visited { color: white; }
+	a:hover { color: white; }
+  }
+  xmp { background-color:#E0E0E0; padding:10px; max-width:450px; }
+
+  /* et pour superposer la canvas et le contenu html... */
+  canvas { position:fixed; top:0; left:0; z-index:1; }
+  #contenu { position:relative; z-index:2; }
+
+  </style>
+</head>
+
+<body link="#FFFFFF" vlink="#FFFFFF" alink="#FFFFFF">
+<div id="contenu">
+	<a href="doc.html" target="_blank">More info here</a>
+</div>
+</body>
+</html>
