@@ -11,27 +11,27 @@
 
 
 // Global parameters
-var online = true;
-var globalSpeed = 2;
-var globalWindFactor = 0.5;
-var nbParticules = 500;  //800;
+var online = false;
+var globalSpeed = 1;
+var globalWindFactor = 0.1;
+var nbParticules = 5000;  //800;
 var refreshFrequency=600;
-var minSpeed = 0.5;
+var minSpeed = 0.1;
 var showValue = true;
 var showDebugValue = false;
 var showVectorMap = false;
-var scl = 10;
+var scl = 20;
 var isLooping = true;
 var deathprobabilityInitial = 0.0002;
 var urlOWM_Weather = 'http://api.openweathermap.org/data/2.5/weather?q=Grenoble,FR&APPID=5aec572df5f6c3d00435e9666bf50a3a';
 var autoFramerate = false;
-var minFramerate = 10;
-var maxFramerate = 25;
+var minFramerate = 5;
+var maxFramerate = 15;
 	
 // Variables initialization
 var bckStrength=15;
 var divergence;
-var inc = 0.1; //0.26;
+var inc = 0.26; //0.26;
 var raining = false;
 var cloudy = false;
 var snowy = false;
@@ -43,13 +43,14 @@ var zoff = 0;
 var zoffInc = 0.0003; //0.0003;
 var fr;
 var particles = [];
-var turningForce=1; //1;
+var turningForce=0.1; //1;
 var flowfield;
 var fluidity;
 var weather;
 var bckColor=123;
 
-var currentColorInc = 1;
+var currentColorIncStep = 0.1;
+var currentColorInc = currentColorIncStep;
 var colorMax = 225;
 var colorMin = 125;
 var currentColor = colorMin;
@@ -63,7 +64,7 @@ var refreshTimeCycle=1;
 var testJSON_TempsCalmeFroidS_HPression_NoWind_sec = {"coord":{"lon":2.35,"lat":48.85},"weather":[{"id":501,"main":"testJSON_TempsCalmeFroidS_HPression_NoWind_sec","description":"moderate rain","icon":"10d"}],"base":"stations","main":{"temp":273.15,"pressure":1050,"humidity":25,"temp_min":270.15,"temp_max":275.15},"visibility":10000,"wind":{"speed":2,"deg":180},"clouds":{"all":75},"dt":1488283200,"sys":{"type":1,"id":5615,"message":0.0412,"country":"FR","sunrise":1488263599,"sunset":1488303206},"id":2988507,"name":"Paris","cod":200}
 
 //touche 3
-var testJSON_TempsCalmeChaudW_BPression_LittleWind = {"coord":{"lon":2.35,"lat":48.85},"weather":[{"id":501,"main":"testJSON_TempsCalmeChaudW_BPression_LittleWind","description":"moderate rain","icon":"10d"}],"base":"stations","main":{"temp":303.15,"pressure":950,"humidity":0,"temp_min":300.15,"temp_max":310.15},"visibility":10000,"wind":{"speed":4.1,"deg":90},"clouds":{"all":50},"dt":1488283200,"sys":{"type":1,"id":5615,"message":0.0412,"country":"FR","sunrise":1488263599,"sunset":1488303206},"id":2988507,"name":"Paris","cod":200}
+var testJSON_TempsCalmeChaudW_BPression_LittleWind = {"coord":{"lon":2.35,"lat":48.85},"weather":[{"id":501,"main":"testJSON_TempsCalmeChaudW_BPression_LittleWind","description":"moderate rain","icon":"10d"}],"base":"stations","main":{"temp":303.15,"pressure":950,"humidity":0,"temp_min":290.15,"temp_max":320.15},"visibility":10000,"wind":{"speed":4.1,"deg":90},"clouds":{"all":50},"dt":1488283200,"sys":{"type":1,"id":5615,"message":0.0412,"country":"FR","sunrise":1488263599,"sunset":1488303206},"id":2988507,"name":"Paris","cod":200}
 
 //touche 4
 var testJSON_TempeteFroidE_sec = {"coord":{"lon":2.35,"lat":48.85},"weather":[{"id":501,"main":"testJSON_TempeteFroidE_sec","description":"moderate rain","icon":"10d"}],"base":"stations","main":{"temp":270.15,"pressure":1100,"humidity":0,"temp_min":265.15,"temp_max":280.15},"visibility":10000,"wind":{"speed":15.1,"deg":270},"clouds":{"all":25},"dt":1488283200,"sys":{"type":1,"id":5615,"message":0.0412,"country":"FR","sunrise":1488263599,"sunset":1488303206},"id":2988507,"name":"Paris","cod":200}
@@ -93,17 +94,17 @@ function setup() {
   colorMode(HSB, 255);
   cols = floor(width / scl)+1;
   rows = floor(height / scl)+1;
-  
+  blendMode(BLEND);
   //docPage = createA('http://jpascal.martin.free.fr/p5/WeatherArt/doc.html','read the doc','_blank');
   
   if (online) {
-	weather = testJSON_TempsCalmeChaudW_BPression_LittleWind;
+	weather = testJSON_MinEnergy;
 	
 	loadJSON(urlOWM_Weather, gotWeather);
   }
   else
   {
-	weather = testJSON_MinEnergy;
+	weather = testJSON_TempsCalmeChaudW_BPression_LittleWind;
   }
 
   flowfield = new Array(cols * rows);
@@ -139,10 +140,11 @@ function readData() {
   var colorMed = 255-map(temp, -15,45,0,255);
   colorMin = floor(max(colorMed-40,0));
   colorMax = floor(min(colorMed+40,255));
-  if (currentColor<colorMax) {currentColorInc = 1;}
-  if (currentColor>colorMax) {currentColorInc = -1;}
+  if (currentColor<colorMax) {currentColorInc = currentColorIncStep;}
+  if (currentColor>colorMax) {currentColorInc = -currentColorIncStep;}
   //print (colorMin + ' / '+colorMed+ ' / '+colorMax);
-  deathprobability = deathprobabilityInitial * humidity/50 + deathprobabilityInitial;
+  //deathprobability = deathprobabilityInitial * humidity/50 //+ deathprobabilityInitial;
+  deathprobability = humidity / 10000;
   setMeteo(windDirection, windSpeed, globalWindFactor);
 }
 
@@ -153,12 +155,30 @@ function gotWeather(data) {
 	onlineWeather = weather;
 }
 
+function whittenScreen() {
+	loadPixels();
+	
+	for (i = 0; i < pixels.length; i++) {
+		c = pixels[i];
+		d = c/255 - humidity/100;
+		if ((c<255) && (d<random(1))) pixels[i] = c+1;
+	//	r = red(pixels[i]);))))
+		//g = green(pixels[i]);
+		//b = blue(pixels[i]);;
+		
+		//pixels[i] = color(255,0,0);
+	}
+	updatePixels();
+}
+
 function draw() {
   //background(255,255,0,humidity/2);
   if (weather.visibility< 10000) { 
 	//background(0,pollutionScore*15,0,humidity/20);
 	
   }
+  if ((frameCount%10)==0) whittenScreen();
+  //background(255,0,255,1);
   //background(clouds*3,clouds,clouds,humidity);
   if (showVectorMap) {
 	background(0,0,0,10);
@@ -224,8 +244,8 @@ function draw() {
 	  text(floor(frameRate())+" fps - inc: "+inc+" - zoffInc: "+zoffInc +" -scl: "+scl+" bckStrength: "+bckStrength + " - fluidity: "+fluidity+" - divergence: "+divergence+" - turningForce: "+turningForce,10,windowHeight-35);
   }
   currentColor = currentColor + currentColorInc;
-  if (currentColor == colorMax) { currentColorInc = -1; }
-  if (currentColor == colorMin) { currentColorInc = 1; }
+  if (currentColor == colorMax) { currentColorInc = -currentColorIncStep; }
+  if (currentColor == colorMin) { currentColorInc = currentColorIncStep; }
   
   if (autoFramerate) { checkFramerate(); }
 }
@@ -275,7 +295,7 @@ function keyPressed() {
  
  if (key=='B') { background(0); }
  if (key=='W') { background(255); }
- if (key=='C') { currentColor = colorMin; currentColorInc = 1; }
+ if (key=='C') { currentColor = colorMin; currentColorInc = 0.1; }
  if (key=='D') { showDebugValue = !showDebugValue; }
  if (key=='V') { showVectorMap = !showVectorMap; }
  if (key=='H') { httpDo('http://jpascal.martin.free.fr/p5/WeatherArt/doc.html'); print("opening the doc");}

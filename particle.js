@@ -56,22 +56,21 @@ function Particle(aKind) {
   this.show = function() {
 	var theGoodColor = (currentColor-20) % 255
 	if (this.kindOf==1) {	
-		stroke(theGoodColor, 255, 255, 100);
-
-		stroke(theGoodColor, 100, 100, 40+pollutionScore);
-		strokeWeight(pollutionScore/4+1);
-		line(this.pos.x, this.pos.y, this.prevPos.x, this.prevPos.y);
-		stroke(theGoodColor, 255, 255, 180+pollutionScore/4);
-		strokeWeight(pollutionScore/4+1);
+		//stroke(theGoodColor, 100, 100, 40);
+		//strokeWeight(pollutionScore/40);
+		//line(this.pos.x, this.pos.y, this.prevPos.x, this.prevPos.y);
+		stroke(theGoodColor, 255, 255, 180);
+		strokeWeight(0.1);
 		line(this.pos.x, this.pos.y, this.prevPos.x, this.prevPos.y);
 		this.updatePrev();
 	}
 	if (this.kindOf==2) {	
-		stroke(theGoodColor, 255, 255, 100+pollutionScore/4);
-		strokeWeight((pollutionScore/4+3)*humidity/100+1);
-		line(this.pos.x, this.pos.y, this.prevPos.x, this.prevPos.y);
-		var radius = (pollutionScore/4+3)*humidity/100+2;
-		fill(255);
+		stroke(theGoodColor, 255, 255, 255);
+		//strokeWeight((pollutionScore/4+3)*humidity/100+1);
+		strokeWeight(0.1);
+		//line(this.pos.x, this.pos.y, this.prevPos.x, this.prevPos.y);
+		var radius = humidity/50;
+		fill(theGoodColor,255,255,100);
 		ellipse(this.pos.x, this.pos.y,radius, radius);
 		this.updatePrev();
 	}
