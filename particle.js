@@ -55,6 +55,8 @@ function Particle(aKind) {
 
   this.show = function() {
 	var theGoodColor = (currentColor-20) % 255
+	
+	// s'il fait sec
 	if (this.kindOf==1) {	
 		//stroke(theGoodColor, 100, 100, 40);
 		//strokeWeight(pollutionScore/40);
@@ -64,25 +66,42 @@ function Particle(aKind) {
 		line(this.pos.x, this.pos.y, this.prevPos.x, this.prevPos.y);
 		this.updatePrev();
 	}
+	
+	// si c'est humide
 	if (this.kindOf==2) {	
 		stroke(theGoodColor, 255, 255, 255);
 		//strokeWeight((pollutionScore/4+3)*humidity/100+1);
-		strokeWeight(0.1);
+		strokeWeight(0.2);
 		//line(this.pos.x, this.pos.y, this.prevPos.x, this.prevPos.y);
 		var radius = humidity/50;
 		fill(theGoodColor,255,255,100);
 		ellipse(this.pos.x, this.pos.y,radius, radius);
 		this.updatePrev();
+		//this.kindOf=1;
 	}
-		if (this.kindOf==3) {	
-		stroke(theGoodColor, 255, 255, 250);
-		strokeWeight(pollutionScore/4+5);
+	
+	// s'il pleut !
+	if (this.kindOf==3) {	
+		stroke(theGoodColor, 255, 255, 50);
+		strokeWeight(0.5);
 		//line(this.pos.x, this.pos.y, this.prevPos.x, this.prevPos.y);
-		var radius = pollutionScore/4+10;
-		fill(theGoodColor);
+		var radius = humidity/30;
+		fill(theGoodColor, 255, 255, 50);
 		ellipse(this.pos.x, this.pos.y,radius, radius);
 		this.updatePrev();
-		this.kindOf=2;
+		this.kindOf=1;
+	}
+	
+	// s'il neige !
+	if (this.kindOf==4) {	
+		stroke(theGoodColor, 255, 100);
+		strokeWeight(0.5);
+		//line(this.pos.x, this.pos.y, this.prevPos.x, this.prevPos.y);
+		var radius = humidity/20;
+		fill(255);
+		ellipse(this.pos.x, this.pos.y,radius, radius);
+		this.updatePrev();
+		//this.kindOf=2;
 	}
   }
 
