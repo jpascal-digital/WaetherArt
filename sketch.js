@@ -22,7 +22,7 @@ var showVectorMap = false;
 var scl = 20;
 var isLooping = true;
 var deathprobabilityInitial = 0.0002;
-var urlOWM_Weather = 'http://api.openweathermap.org/data/2.5/weather?q=Paris,FR&APPID=5aec572df5f6c3d00435e9666bf50a3a';
+var urlOWM_Weather = 'https://api.openweathermap.org/data/2.5/weather?q=Paris,FR&APPID=5aec572df5f6c3d00435e9666bf50a3a';
 var autoFramerate = false;
 var minFramerate = 5;
 var maxFramerate = 15;
